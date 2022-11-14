@@ -2,13 +2,12 @@ package com.example.consumingrest;
 
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -36,6 +35,8 @@ public class ConsumingRestApplication {
 	private String keyPW;
 	@Value("${client.ssl.store-type}")
 	private String storeType;
+	@Value("${client.connect.base-url}")
+	private String baseURL;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConsumingRestApplication.class, args);
@@ -52,7 +53,7 @@ public class ConsumingRestApplication {
 	public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
 		return args -> {
 			String pong = restTemplate.getForObject(
-					"https://localhost:8000/pong", String.class);
+					baseURL + "/pong", String.class);
 			System.out.println(pong);
 		};
 	}
@@ -70,7 +71,7 @@ public class ConsumingRestApplication {
 		// create client with loaded stores
 		SSLContext sslContext = SSLContextBuilder
 				.create()
-				.loadKeyMaterial(ks, keyStorePW.toCharArray())
+				.loadKeyMaterial(ks, keyPW.toCharArray())
 				.build();
 		HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();
 		return client;
@@ -80,7 +81,7 @@ public class ConsumingRestApplication {
 	// helper to load keystore from given path
 	private KeyStore keyStore(String file, char[] password)
 			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		KeyStore keyStore = KeyStore.getInstance("PKCS12");
+		KeyStore keyStore = KeyStore.getInstance(storeType);
 		InputStream in = new FileInputStream(file);
 		keyStore.load(in, password);
 		return keyStore;
