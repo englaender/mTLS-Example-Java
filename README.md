@@ -105,6 +105,8 @@ If you want to simply run those use
 java -jar <path to jar>
 ```
 
+The Dockerfile expects `/target/mtls-server-0.0.1.jar` (created by the `mvn clean package` command, mentioned earlier).
+Furthermore the root certificate ca.pem should be in `/Server`, so it can be added to cacerts of the image.
 After that you can build the docker image with
 ```bash
 docker build -t mtls-server-spring
