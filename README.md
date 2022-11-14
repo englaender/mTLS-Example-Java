@@ -3,6 +3,14 @@
 This project contains a Server and a Client, which communicate via REST and encrypt their communication using mTLS.
 Also a little **disclaimer** : take everything written here with a grain of salt. I'm neither an expert on mTLS nor on Java.
 
+**Table of contents :**
+- [mTLS-Excurse](#mTLS-Excurse)  
+- [Public and private key management in java](#Public and private key management in java)
+- [Get Started](#Get Started)
+  - [Using the certificate generation script](#Using the certificate generation script)
+  - [Running the Server/Client (jar, docker, k8s)](#Running the Server/Client)
+
+<a name="mTLS-Excurse"/>
 ## mTLS excurse
 
 As for the lingo : 
@@ -29,7 +37,8 @@ but more on that later).
 To summarize :
 The server/client will need it's own certificate signed by the CA and the CA's certificate.
 
-## public and private key management in java
+<a name="Public and private key management in java"/>
+## Public and private key management in java
 
 Java as always makes things more complicated than they need to be :
 Two additional concepts, key- and truststores, have to be introduced, so just bear with me.
@@ -58,12 +67,14 @@ To work with these files obviously another tool is needed because openssl doesn'
 That's what keytool is for, which is included in each Java release.
 Java can work with regular .pem files etc. but I expected to be too much of a hassle.
 
+<a name="Get Started"/>
 ## Get Started
 
 Now that you know what's going on (or before, if you want to see whether this code even works and I can't blame you tbh)
 let's get started with how to use all this code and stuff.
 
-### Using the script
+<a name="Using the certificate generation script"/>
+### Using the certificate generation script
 
 First we need to create certificates and but them in the right places.
 The script in `/certificates` shall take care of that for you (well, mostly).
@@ -92,10 +103,11 @@ In case you're interested in the content of a keystore file you can inspect them
 keytool -list -keystore <name> # you can also use -cacerts to access the jvm truststore
 ```
 
-### Running the actual Server/Client
+<a name="Running the Server/Client"/>
+### Running the Server/Client
 
 The following commands need to be executed from either `/Client` or `/Server`
-Now to build the jdk using maven (gradle is supported in theory but I haven't maintained it, so who knows) execute
+Now to build the jar using maven (gradle is supported in theory but I haven't maintained it, so who knows) execute
 ```bash
 mvn clean package
 ```
