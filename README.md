@@ -63,6 +63,8 @@ Java can work with regular .pem files etc. but I expected to be too much of a ha
 Now that you know what's going on (or before, if you want to see whether this code even works and I can't blame you tbh)
 let's get started with how to use all this code and stuff.
 
+### Using the script
+
 First we need to create certificates and but them in the right places.
 The script in `/certificates` shall take care of that for you (well, mostly).
 An important thing to note is that as of now we utilize the JVM truststore cacerts to manage the CA certificate.
@@ -72,8 +74,15 @@ keytool -delete -cacerts -alias ca
 ```
 
 The script has to be run as admin though because cacerts is modified.
-If you want to change passwords for the resulting files (which you should) do it there.
-Also if you intend to run your applications anywhere but on localhost, you'll have to change the IP references accordingly.
+If you want to change passwords for the resulting files (which you should) do it there (under the STEP 2 section).
+Also if you intend to run your applications anywhere but on localhost, you'll have to change the IP references
+accordingly.
+This can be done using `-SubAlts` which allows you to set the subject alternative names (dnames are CN=CA and CN=SERVER).
+Use it like this :
+```bash
+./genKeystore.ps1 -SubAlts c=DNS:localhost,IP:127.0.0.1 # this is the default
+```
+If you want to change the other extensions, have a look at [this documentation](https://access.redhat.com/documentation/en-us/red_hat_certificate_system/9/html/administration_guide/standard_x.509_v3_certificate_extensions#doc-wrapper).
 
 After running all files will be placed where they have to be (resources folder of client and server) unless you tampered 
 with the project structure.
@@ -83,7 +92,9 @@ In case you're interested in the content of a keystore file you can inspect them
 keytool -list -keystore <name> # you can also use -cacerts to access the jvm truststore
 ```
 
-The following commands need to be exected from either `/Client` or `/Server`
+### Running the actual Server/Client
+
+The following commands need to be executed from either `/Client` or `/Server`
 Now to build the jdk using maven (gradle is supported in theory but I haven't maintained it, so who knows) execute
 ```bash
 mvn clean package
@@ -99,7 +110,8 @@ After that you can build the docker image with
 docker build -t mtls-server-spring
 ```
 
-And deploy the server to kubernetes using
+And deploy the server to kubernetes using the following command but first you'll have to adapt the IP for the service 
+under spec.clusterIP. The IP of course has to lie within your clusters IP range.
 ```bash
 kubectl create -f service_deployment.yaml
 ```
