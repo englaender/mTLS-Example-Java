@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mtls-server
-        image: englaender/mtls-server-spring
+        image: mtls-server-spring
         ports:
           - name: server-service 
             containerPort: 8000
